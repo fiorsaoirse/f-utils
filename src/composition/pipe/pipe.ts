@@ -1,13 +1,13 @@
-import { First, Last, UnaryFunction, UnaryFunctionParameter } from '../types';
+import { First, Last, VariadicFunction } from '../../types';
 
-type FirstFunctionParamType<Fn extends Array<UnaryFunction>> =
-    UnaryFunctionParameter<First<Fn>>;
+type FirstFunctionParamsType<Fn extends Array<VariadicFunction>> =
+    Parameters<First<Fn>>;
 
-type LastFunctionReturnType<Fn extends Array<UnaryFunction>> =
+type LastFunctionReturnType<Fn extends Array<VariadicFunction>> =
     ReturnType<Last<Fn>>;
 
 type Pipeline<
-    StepFunctions extends [UnaryFunction, ...Array<UnaryFunction>],
+    StepFunctions extends [VariadicFunction, ...Array<VariadicFunction>],
     Length extends number = StepFunctions['length']
 > = Length extends 1
     ? StepFunctions
@@ -15,9 +15,9 @@ type Pipeline<
     ? [
         Current,
         ...Pipeline<
-            Current extends UnaryFunction
-            ? Next extends UnaryFunction
-            ? RestSteps extends Array<UnaryFunction>
+            Current extends VariadicFunction
+            ? Next extends VariadicFunction
+            ? RestSteps extends Array<VariadicFunction>
             ? [(param: ReturnType<Current>) => ReturnType<Next>, ...RestSteps]
             : never
             : never
@@ -28,9 +28,9 @@ type Pipeline<
     ;
 
 const pipe =
-    <PipelineFunctions extends [UnaryFunction, ...Array<UnaryFunction>]>
+    <PipelineFunctions extends [VariadicFunction, ...Array<VariadicFunction>]>
         (...functions: Pipeline<PipelineFunctions>) =>
-        (input: FirstFunctionParamType<PipelineFunctions>): LastFunctionReturnType<PipelineFunctions> => {
+        (...input: FirstFunctionParamsType<PipelineFunctions>): LastFunctionReturnType<PipelineFunctions> => {
             const len = functions.length;
             let result = functions[0](input);
 

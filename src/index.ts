@@ -1,4 +1,4 @@
-export { default as compose } from './compose';
-export { default as pipe } from './pipe';
+export { default as compose } from './composition/compose';
+export { default as pipe } from './composition/pipe';
 export * from './types';
 

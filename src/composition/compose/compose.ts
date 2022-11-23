@@ -1,13 +1,13 @@
-import { First, Last, UnaryFunction, UnaryFunctionParameter } from '../types';
+import { First, Last, VariadicFunction } from '../../types';
 
-type LastFunctionParamType<Fn extends Array<UnaryFunction>> =
-    UnaryFunctionParameter<Last<Fn>>;
+type LastFunctionParamType<Fn extends Array<VariadicFunction>> =
+    Parameters<Last<Fn>>;
 
-type FirstFunctionReturnType<Fn extends Array<UnaryFunction>> =
+type FirstFunctionReturnType<Fn extends Array<VariadicFunction>> =
     ReturnType<First<Fn>>;
 
 type Compose<
-    StepFunctions extends [...Array<UnaryFunction>, UnaryFunction],
+    StepFunctions extends [...Array<VariadicFunction>, VariadicFunction],
     Length extends number = StepFunctions['length']
 > =
     Length extends 1
@@ -15,9 +15,9 @@ type Compose<
     : StepFunctions extends [...infer Rest, infer Outer, infer Inner]
     ? [
         ...Compose<
-            Inner extends UnaryFunction
-            ? Outer extends UnaryFunction
-            ? Rest extends Array<UnaryFunction>
+            Inner extends VariadicFunction
+            ? Outer extends VariadicFunction
+            ? Rest extends Array<VariadicFunction>
             ? [...Rest, (arg: ReturnType<Inner>) => ReturnType<Outer>]
             : never
             : never
@@ -29,9 +29,9 @@ type Compose<
     ;
 
 const compose =
-    <ComposeFunctions extends [...Array<UnaryFunction>, UnaryFunction]>
+    <ComposeFunctions extends [...Array<VariadicFunction>, VariadicFunction]>
         (...functions: Compose<ComposeFunctions>) =>
-        (input: LastFunctionParamType<ComposeFunctions>): FirstFunctionReturnType<ComposeFunctions> => {
+        (...input: LastFunctionParamType<ComposeFunctions>): FirstFunctionReturnType<ComposeFunctions> => {
             let len = functions.length - 1;
             let result = functions[len--](input);
 

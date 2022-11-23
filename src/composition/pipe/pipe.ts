@@ -32,7 +32,7 @@ const pipe =
         (...functions: Pipeline<PipelineFunctions>) =>
         (...input: FirstFunctionParamsType<PipelineFunctions>): LastFunctionReturnType<PipelineFunctions> => {
             const len = functions.length;
-            let result = functions[0](input);
+            let result = functions[0](...input);
 
             for (let i = 1; i < len; i += 1) {
                 result = functions[i](result);

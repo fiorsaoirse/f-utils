@@ -6,10 +6,11 @@ describe('Checking function composition', () => {
         const fn2 = (value: string): string => `fn2(${value})`;
         const fn3 = (value: string): string => `fn3(${value})`;
 
-        const composition = compose(fn1, fn2, fn3);
-
         const value = 'input';
-        expect(composition(value)).toBe('fn1(fn2(fn3(input)))');
+        const result = fn1(fn2(fn3(value)));
+
+        const composition = compose(fn1, fn2, fn3);
+        expect(composition(value)).toBe(result);
     });
 
     it('Compose with multiple-types fns', () => {
@@ -19,10 +20,34 @@ describe('Checking function composition', () => {
         };
         const fn3 = (value: string): string => `fn3(${value})`;
 
-        const composition = compose(fn3, fn2, fn1);
-
         const value = 'hey';
-        expect(composition(value)).toBe('fn3(foo-foo-foo)');
+        const result = fn3(fn2(fn1(value)));
+
+        const composition = compose(fn3, fn2, fn1);
+        expect(composition(value)).toBe(result);
+    });
+
+    it('Compose with multiple-types fns with multiple params', () => {
+        const fn1 = (value: string, count: number): string => value.repeat(count);
+        const fn2 = (value: string): Array<string> => value.split('');
+        const fn3 = (value: Array<string>): [number, Array<string>] => [value.length, value.reverse()];
+        const fn4 = (value: [number, Array<string>]): Array<string> => {
+            const [num, arr] = value;
+            for (let i = 0; i < num; i += 1) {
+                arr[i] = arr[i] + num;
+            }
+
+            return arr;
+        };
+        const fn5 = (value: Array<string>): string => value.join(':');
+
+        const input = 'hello';
+        const count = 3;
+
+        const composition = compose(fn5, fn4, fn3, fn2, fn1);
+        const result = fn5(fn4(fn3(fn2(fn1(input, count)))));
+
+        expect(composition(input, count)).toBe(result);
     });
 
     it('Compose some string transform functions', () => {

@@ -33,7 +33,7 @@ const compose =
         (...functions: Compose<ComposeFunctions>) =>
         (...input: LastFunctionParamType<ComposeFunctions>): FirstFunctionReturnType<ComposeFunctions> => {
             let len = functions.length - 1;
-            let result = functions[len--](input);
+            let result = functions[len--](...input);
 
             for (let i = len; i >= 0; i -= 1) {
                 result = functions[i](result);

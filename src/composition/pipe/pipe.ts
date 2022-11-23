@@ -31,14 +31,10 @@ const pipe =
     <PipelineFunctions extends [VariadicFunction, ...Array<VariadicFunction>]>
         (...functions: Pipeline<PipelineFunctions>) =>
         (...input: FirstFunctionParamsType<PipelineFunctions>): LastFunctionReturnType<PipelineFunctions> => {
-            const len = functions.length;
-            let result = functions[0](...input);
+            const [first, ...rest] = functions;
+            const initial = first.apply(null, input);
 
-            for (let i = 1; i < len; i += 1) {
-                result = functions[i](result);
-            }
-
-            return result;
+            return rest.reduce((current, fn) => fn(current), initial);
         };
 
 export default pipe;

@@ -32,14 +32,13 @@ const compose =
     <ComposeFunctions extends [...Array<VariadicFunction>, VariadicFunction]>
         (...functions: Compose<ComposeFunctions>) =>
         (...input: LastFunctionParamType<ComposeFunctions>): FirstFunctionReturnType<ComposeFunctions> => {
-            let len = functions.length - 1;
-            let result = functions[len--](...input);
+            const lastIndex = functions.length - 1;
+            const last = functions.at(lastIndex)!;
+            const initial = last.apply(null, input);
 
-            for (let i = len; i >= 0; i -= 1) {
-                result = functions[i](result);
-            }
+            functions.length = lastIndex;
 
-            return result;
+            return functions.reduceRight((current, fn) => fn(current), initial);
         };
 
 export default compose;
